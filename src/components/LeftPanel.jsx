@@ -56,7 +56,7 @@ const LeftPanel = ({ selectedDate, onDateSelect, onRecordVideo, onUploadVideo, v
         />
       </div>
       
-      {/* Daily Entry Card */}
+            {/* Daily Entry Card */}
       <div className="px-6 mb-6">
         <div className="bg-white p-6 border border-gray-200">
           <div className="mb-4">
@@ -100,22 +100,23 @@ const LeftPanel = ({ selectedDate, onDateSelect, onRecordVideo, onUploadVideo, v
         </div>
       </div>
       
+      {/* Spacer to push buttons to bottom */}
+      <div className="flex-1"></div>
+      
       {/* Record Button */}
       <div className="px-6 mb-4">
         <button
           onClick={onRecordVideo}
-          className="w-full bg-red-500 hover:bg-red-600 text-white font-medium py-4 px-6 rounded-lg flex items-center justify-center space-x-3 transition-colors"
+          className="w-full bg-red-500 hover:bg-red-600 text-white font-medium py-3 px-4 rounded-[30px] transition-colors"
         >
-          <Mic className="w-6 h-6" />
-          <span>Record Video</span>
+          Record Video
         </button>
       </div>
       
       {/* Upload Button */}
-      <div className="px-6">
-        <label className="w-full bg-blue-500 hover:bg-blue-600 text-white font-medium py-4 px-6 rounded-lg flex items-center justify-center space-x-3 transition-colors cursor-pointer">
-          <Upload className="w-6 h-6" />
-          <span>Upload Video</span>
+      <div className="px-6 pb-6">
+        <label className="w-full bg-blue-500 hover:bg-blue-600 text-white font-medium py-3 px-4 rounded-[30px] transition-colors cursor-pointer flex items-center justify-center">
+          Upload Video
           <input
             type="file"
             accept="video/*"

@@ -60,7 +60,7 @@ const CompactCalendar = ({ selectedDate, onDateSelect }) => {
         <button
           key={day}
           onClick={() => handleDateClick(day)}
-          className={`w-6 h-6 rounded-full text-sm font-medium transition-colors ${
+          className={`w-6 h-6 rounded-full text-[10px] font-medium transition-colors ${
             isToday(day)
               ? 'bg-[#7E7E7E] text-white'
               : isSelected(day)
@@ -104,7 +104,7 @@ const CompactCalendar = ({ selectedDate, onDateSelect }) => {
       {/* Day names */}
       <div className="grid grid-cols-7 gap-1 mb-1">
         {dayNames.map((day) => (
-          <div key={day} className="w-6 h-6 flex items-center justify-center text-xs font-medium text-gray-500">
+          <div key={day} className="w-6 h-6 flex items-center justify-center text-[10px] font-medium text-gray-500">
             {day}
           </div>
         ))}
