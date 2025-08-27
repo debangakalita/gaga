@@ -1,16 +1,15 @@
 import React from 'react'
-import { Play, Shuffle, Trash2 } from 'lucide-react'
+import { Play, Trash2 } from 'lucide-react'
 import VideoThumbnail from './VideoThumbnail'
 
-const RightPanel = ({ selectedDate, videos, onDeleteVideo, onOpenModal, onRandomMoment }) => {
+const RightPanel = ({ selectedDate, videos, onDeleteVideo, onOpenModal }) => {
   const todayVideos = videos || []
   
   return (
     <div className="flex-1 bg-white flex flex-col h-full">
       {/* Header */}
-      <div className="p-6 border-b border-gray-200">
-        <div className="flex items-center justify-between">
-          <h2 className="text-2xl font-semibold text-gray-800">Watch Movie</h2>
+      <div className="h-14 flex items-center border-b border-gray-200">
+        <div className="px-6 flex items-center justify-end w-full">
           {todayVideos.length > 0 && (
             <button
               onClick={onOpenModal}
@@ -45,17 +44,7 @@ const RightPanel = ({ selectedDate, videos, onDeleteVideo, onOpenModal, onRandom
         )}
       </div>
       
-      {/* Random Moment Button */}
-      <div className="p-6 border-t border-gray-200">
-        <button
-          onClick={onRandomMoment}
-          disabled={todayVideos.length === 0}
-          className="w-full bg-purple-500 hover:bg-purple-600 disabled:bg-gray-300 disabled:cursor-not-allowed text-white font-medium py-3 px-4 rounded-lg flex items-center justify-center space-x-2 transition-colors"
-        >
-          <Shuffle className="w-5 h-5" />
-          <span>Random Moment</span>
-        </button>
-      </div>
+
     </div>
   )
 }

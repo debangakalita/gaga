@@ -61,7 +61,6 @@ function App() {
         videos={videos[selectedDate.toISOString().split('T')[0]] || []}
         onDeleteVideo={handleDeleteVideo}
         onOpenModal={() => setIsModalOpen(true)}
-        onRandomMoment={handleRandomMoment}
       />
       <MakeMovieModal
         isOpen={isModalOpen}

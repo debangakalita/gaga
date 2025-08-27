@@ -60,9 +60,9 @@ const CompactCalendar = ({ selectedDate, onDateSelect }) => {
         <button
           key={day}
           onClick={() => handleDateClick(day)}
-          className={`w-8 h-8 rounded-full text-sm font-medium transition-colors ${
+          className={`w-6 h-6 rounded-full text-sm font-medium transition-colors ${
             isToday(day)
-              ? 'bg-blue-500 text-white'
+              ? 'bg-[#7E7E7E] text-white'
               : isSelected(day)
               ? 'bg-gray-200 text-gray-800'
               : 'text-gray-600 hover:bg-gray-100'
@@ -77,9 +77,9 @@ const CompactCalendar = ({ selectedDate, onDateSelect }) => {
   }
   
   return (
-    <div className="bg-white rounded-lg p-4 border border-gray-200">
+    <div className="bg-[#D9D9D9] p-4 border border-gray-200">
       {/* Header */}
-      <div className="flex items-center justify-between mb-4">
+      <div className="flex items-center justify-between mb-3">
         <button
           onClick={goToPreviousMonth}
           className="p-1 hover:bg-gray-100 rounded"
@@ -102,9 +102,9 @@ const CompactCalendar = ({ selectedDate, onDateSelect }) => {
       </div>
       
       {/* Day names */}
-      <div className="grid grid-cols-7 gap-1 mb-2">
+      <div className="grid grid-cols-7 gap-1 mb-1">
         {dayNames.map((day) => (
-          <div key={day} className="w-8 h-8 flex items-center justify-center text-xs font-medium text-gray-500">
+          <div key={day} className="w-6 h-6 flex items-center justify-center text-xs font-medium text-gray-500">
             {day}
           </div>
         ))}
