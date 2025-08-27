@@ -1,0 +1,55 @@
+---
+alwaysApply: false
+---
+## 🔹 Features
+1. **Daily Video Diary**
+   - Add video clips or record directly.
+   - All videos are stored by date.
+
+2. **Calendar View (Left Panel)**
+   - Compact calendar always visible (no scrolling needed).
+   - Shows the selected day’s videos.
+
+3. **Daily Videos (Right Panel)**
+   - Display all clips for the selected day in a grid layout.
+   - Option to preview or delete a video.
+
+4. **Make Movie**
+   - Button: “Watch Movie”.
+   - Opens a popup modal.
+   - User can:
+     - Merge multiple clips of the day.
+     - Change sequence of clips (drag/drop).
+     - Trim clips.
+     - Export final movie.
+
+5. **Random Moment**
+   - Button at bottom right to play a random clip.
+
+---
+
+## 🔹 UI / UX Guidelines
+- Layout must match **Figma mockup**:
+  - **Left column (fixed width ~280px):**
+    - Title → Calendar → Daily entry card → Record button → Upload button.  
+    - All visible at once without scrolling.  
+  - **Right column (flexible):**
+    - Title “Watch Movie”
+    - 2x2 video grid  
+    - “Random moment” button at bottom right.
+- **Minimal** styling (color/styling will be added later).
+- **Inter font** only.
+- Everything must **fit in 100% viewport height**.
+- Left panel stays fixed, right panel scrolls if needed.
+
+---
+
+## 🔹 Tech Guidelines
+- Use **React + Tailwind** (keep code simple and readable).
+- Calendar should be **compact** (only ~220px height).
+- Videos should be **saved in local storage** (for MVP).
+- Must be **responsive** for desktop, tablet, and mobile.
+- Keep “Make Movie” popup simple but extensible (modular).
+- Code should be clean, reusable components.
+
+---
