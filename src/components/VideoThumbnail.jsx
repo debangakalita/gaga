@@ -59,16 +59,7 @@ const VideoThumbnail = ({ video, onDelete }) => {
           </div>
         </button>
         
-        {/* Video Type Badge */}
-        <div className="absolute top-2 left-2">
-          <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-            video.type === 'recorded' 
-              ? 'bg-red-100 text-red-800' 
-              : 'bg-blue-100 text-blue-800'
-          }`}>
-            {video.type === 'recorded' ? 'Recorded' : 'Uploaded'}
-          </span>
-        </div>
+
         
         {/* Delete Button */}
         <button
@@ -81,15 +72,14 @@ const VideoThumbnail = ({ video, onDelete }) => {
       
       {/* Video Info */}
       <div className="p-3">
-        <div className="flex items-center justify-between mb-1">
+        <div className="flex items-center justify-between">
           <span className="text-sm font-medium text-gray-800 truncate">
-            {video.type === 'recorded' ? 'Recorded Video' : video.filename || 'Uploaded Video'}
+            {video.filename || 'Video'}
           </span>
-        </div>
-        
-        <div className="flex items-center text-xs text-gray-500">
-          <Clock className="w-3 h-3 mr-1" />
-          <span>{formatTime(video.timestamp)}</span>
+          <div className="flex items-center text-xs text-gray-500">
+            <Clock className="w-3 h-3 mr-1" />
+            <span>{formatTime(video.timestamp)}</span>
+          </div>
         </div>
       </div>
     </div>

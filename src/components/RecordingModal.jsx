@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react'
 import { X, Video, Square } from 'lucide-react'
 
-const RecordingModal = ({ isOpen, onClose, onSave, selectedDate }) => {
+const RecordingModal = ({ isOpen, onClose, onSave, selectedDate, currentVideoCount }) => {
   const [isRecording, setIsRecording] = useState(false)
   const [recordedChunks, setRecordedChunks] = useState([])
   const [stream, setStream] = useState(null)
@@ -65,12 +65,18 @@ const RecordingModal = ({ isOpen, onClose, onSave, selectedDate }) => {
       const blob = new Blob(chunks, { type: 'video/webm' })
       const dateKey = selectedDate.toLocaleDateString('en-CA')
       console.log('Recording video for date:', dateKey, 'Selected date:', selectedDate)
+      
+      // Use the current video count passed from parent to generate clip number
+      const clipNumber = currentVideoCount + 1
+      console.log('Recording modal - currentVideoCount:', currentVideoCount, 'clipNumber:', clipNumber)
+      
       const video = {
         id: Date.now().toString(),
         blob, // Store the blob for IndexedDB
         date: dateKey,
         timestamp: new Date().toISOString(),
-        type: 'recorded'
+        type: 'recorded',
+        filename: `Clip ${clipNumber}`
       }
       
       // Save video and close modal

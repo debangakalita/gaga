@@ -47,13 +47,17 @@ function App() {
       // Convert file to blob for storage
       const blob = await videoStorage.fileToBlob(file)
       
+      // Get current video count for this date to generate clip number
+      const currentVideos = videos[dateKey] || []
+      const clipNumber = currentVideos.length + 1
+      
       const video = {
         id: Date.now().toString(),
         blob, // Store the blob for IndexedDB
         date: dateKey,
         timestamp: new Date().toISOString(),
         type: 'uploaded',
-        filename: file.name
+        filename: `Clip ${clipNumber}`
       }
       
       console.log('About to add video:', video)
@@ -110,7 +114,14 @@ function App() {
         onClose={() => setIsRecordingModalOpen(false)}
         onSave={handleVideoSaved}
         selectedDate={selectedDate}
+        currentVideoCount={(videos[dateKey] || []).length}
       />
+      {/* Debug info */}
+      {isRecordingModalOpen && (
+        <div className="fixed top-4 right-4 bg-black text-white p-2 text-xs z-50">
+          Debug: Date: {dateKey}, Videos: {(videos[dateKey] || []).length}
+        </div>
+      )}
     </div>
   )
 }
