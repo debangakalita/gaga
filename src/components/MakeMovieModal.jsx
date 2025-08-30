@@ -29,19 +29,157 @@ const MakeMovieModal = ({ isOpen, onClose, videos, selectedDate }) => {
     setVideoOrder(newOrder)
   }
   
-  const handleExport = () => {
-    const selectedVideosForExport = videoOrder.filter(v => 
+  const handleWatchMovie = () => {
+    const selectedVideosForMovie = videoOrder.filter(v => 
       selectedVideos.find(sv => sv.id === v.id)?.selected
     )
     
-    if (selectedVideosForExport.length === 0) {
-      alert('Please select at least one video to export')
+    if (selectedVideosForMovie.length === 0) {
+      alert('Please select at least one video to watch')
       return
     }
     
-    // For MVP, we'll just show a success message
-    // In a real implementation, this would use a video processing library
-    alert(`Exporting movie with ${selectedVideosForExport.length} clips...`)
+    // Create a fullscreen video player
+    const moviePlayer = document.createElement('div')
+    moviePlayer.className = 'fixed inset-0 bg-black z-50'
+    moviePlayer.style.zIndex = '9999'
+    
+    const videoElement = document.createElement('video')
+    videoElement.controls = true
+    videoElement.style.width = '100vw'
+    videoElement.style.height = '100vh'
+    videoElement.style.objectFit = 'contain'
+    videoElement.autoplay = true
+    
+    // Add close button
+    const closeButton = document.createElement('button')
+    closeButton.innerHTML = '✕'
+    closeButton.className = 'absolute top-4 right-4 w-12 h-12 bg-black bg-opacity-50 text-white text-2xl font-bold rounded-full flex items-center justify-center hover:bg-opacity-75 transition-all z-10'
+    closeButton.onclick = () => {
+      document.body.removeChild(moviePlayer)
+      if (document.fullscreenElement) {
+        document.exitFullscreen()
+      }
+    }
+    
+    // Add navigation arrows
+    const prevButton = document.createElement('button')
+    prevButton.innerHTML = '‹'
+    prevButton.className = 'absolute left-4 top-1/2 transform -translate-y-1/2 w-16 h-16 bg-black bg-opacity-50 text-white text-4xl font-bold rounded-full flex items-center justify-center hover:bg-opacity-75 transition-all z-10'
+    prevButton.onclick = () => {
+      if (currentVideoIndex > 0) {
+        currentVideoIndex--
+        isTransitioning = false
+        playNextVideo()
+      }
+    }
+    
+    const nextButton = document.createElement('button')
+    nextButton.innerHTML = '›'
+    nextButton.className = 'absolute right-4 top-1/2 transform -translate-y-1/2 w-16 h-16 bg-black bg-opacity-50 text-white text-4xl font-bold rounded-full flex items-center justify-center hover:bg-opacity-75 transition-all z-10'
+    nextButton.onclick = () => {
+      if (currentVideoIndex < selectedVideosForMovie.length - 1) {
+        currentVideoIndex++
+        isTransitioning = false
+        playNextVideo()
+      }
+    }
+    
+    // Update navigation buttons visibility
+    const updateNavButtons = () => {
+      prevButton.style.display = currentVideoIndex > 0 ? 'flex' : 'none'
+      nextButton.style.display = currentVideoIndex < selectedVideosForMovie.length - 1 ? 'flex' : 'none'
+    }
+    
+    // Create a playlist system that plays videos seamlessly
+    let currentVideoIndex = 0
+    let isTransitioning = false
+    
+    const playNextVideo = () => {
+      if (currentVideoIndex >= selectedVideosForMovie.length) {
+        // All videos played, loop back to first
+        currentVideoIndex = 0
+      }
+      
+      if (!isTransitioning) {
+        const video = selectedVideosForMovie[currentVideoIndex]
+        videoElement.src = video.url
+        
+        // Add a small crossfade effect
+        videoElement.style.opacity = '0'
+        videoElement.style.transition = 'opacity 0.3s ease-in-out'
+        
+        videoElement.oncanplay = () => {
+          videoElement.play()
+          videoElement.style.opacity = '1'
+          updateNavButtons() // Update navigation buttons
+        }
+        
+        videoElement.onended = () => {
+          isTransitioning = true
+          currentVideoIndex++
+          setTimeout(() => {
+            isTransitioning = false
+            playNextVideo()
+          }, 100) // Small delay for smooth transition
+        }
+      }
+    }
+    
+    // Start playing
+    playNextVideo()
+    
+    // Add elements to the player
+    moviePlayer.appendChild(videoElement)
+    moviePlayer.appendChild(closeButton)
+    moviePlayer.appendChild(prevButton)
+    moviePlayer.appendChild(nextButton)
+    document.body.appendChild(moviePlayer)
+    
+    // Request fullscreen
+    if (document.documentElement.requestFullscreen) {
+      document.documentElement.requestFullscreen()
+    } else if (document.documentElement.webkitRequestFullscreen) {
+      document.documentElement.webkitRequestFullscreen()
+    } else if (document.documentElement.msRequestFullscreen) {
+      document.documentElement.msRequestFullscreen()
+    }
+    
+    // Add keyboard navigation
+    const handleKeyPress = (event) => {
+      switch(event.key) {
+        case 'ArrowLeft':
+          if (currentVideoIndex > 0) {
+            currentVideoIndex--
+            isTransitioning = false
+            playNextVideo()
+          }
+          break
+        case 'ArrowRight':
+          if (currentVideoIndex < selectedVideosForMovie.length - 1) {
+            currentVideoIndex++
+            isTransitioning = false
+            playNextVideo()
+          }
+          break
+        case 'Escape':
+          document.body.removeChild(moviePlayer)
+          if (document.fullscreenElement) {
+            document.exitFullscreen()
+          }
+          break
+      }
+    }
+    
+    document.addEventListener('keydown', handleKeyPress)
+    
+    // Clean up event listener when closing
+    const originalCloseButton = closeButton.onclick
+    closeButton.onclick = () => {
+      document.removeEventListener('keydown', handleKeyPress)
+      originalCloseButton()
+    }
+    
     onClose()
   }
   
@@ -54,7 +192,7 @@ const MakeMovieModal = ({ isOpen, onClose, videos, selectedDate }) => {
       <div className="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] overflow-hidden">
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-gray-200">
-          <h2 className="text-2xl font-semibold text-gray-800">Make Movie</h2>
+          <h2 className="text-2xl font-semibold text-gray-800">Create Movie</h2>
           <button
             onClick={onClose}
             className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
@@ -76,7 +214,7 @@ const MakeMovieModal = ({ isOpen, onClose, videos, selectedDate }) => {
               })}
             </h3>
             <p className="text-gray-600">
-              {videos.length} video{videos.length !== 1 ? 's' : ''} available
+              Select and arrange your clips to create a continuous movie
             </p>
           </div>
           
@@ -190,12 +328,12 @@ const MakeMovieModal = ({ isOpen, onClose, videos, selectedDate }) => {
               Cancel
             </button>
             <button
-              onClick={handleExport}
+              onClick={handleWatchMovie}
               disabled={selectedCount === 0}
               className="px-6 py-2 bg-blue-500 hover:bg-blue-600 disabled:bg-gray-300 disabled:cursor-not-allowed text-white font-medium rounded-lg transition-colors flex items-center space-x-2"
             >
-              <Download className="w-4 h-4" />
-              <span>Export Movie</span>
+              <Play className="w-4 h-4" />
+              <span>Watch Movie</span>
             </button>
           </div>
         </div>
