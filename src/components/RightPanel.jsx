@@ -2,14 +2,20 @@ import React from 'react'
 import { Play, Trash2 } from 'lucide-react'
 import VideoThumbnail from './VideoThumbnail'
 
-const RightPanel = ({ selectedDate, videos, onDeleteVideo, onOpenModal }) => {
+const RightPanel = ({ selectedDate, videos, onDeleteVideo, onOpenModal, isLoading }) => {
   const todayVideos = videos || []
   
   return (
     <div className="flex-1 bg-white flex flex-col h-full">
       {/* Header */}
       <div className="h-14 flex items-center border-b border-gray-200">
-        <div className="px-6 flex items-center justify-end w-full">
+        <div className="px-6 flex items-center justify-between w-full">
+          <button
+            onClick={() => window.location.reload()}
+            className="text-gray-500 hover:text-gray-700 text-sm"
+          >
+            Refresh
+          </button>
           {todayVideos.length > 0 && (
             <button
               onClick={onOpenModal}
@@ -23,7 +29,14 @@ const RightPanel = ({ selectedDate, videos, onDeleteVideo, onOpenModal }) => {
       
       {/* Video Grid */}
       <div className="flex-1 p-6 overflow-y-auto">
-        {todayVideos.length === 0 ? (
+        {isLoading ? (
+          <div className="flex flex-col items-center justify-center h-full text-gray-500">
+            <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-4">
+              <div className="w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+            </div>
+            <p className="text-lg font-medium mb-2">Loading videos...</p>
+          </div>
+        ) : todayVideos.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-full text-gray-500">
             <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-4">
               <Play className="w-8 h-8" />

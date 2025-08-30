@@ -9,7 +9,7 @@ const LeftPanel = ({ selectedDate, onDateSelect, onRecordVideo, onUploadVideo, v
   
   // Load saved title and description for the selected date
   useEffect(() => {
-    const dateKey = selectedDate.toISOString().split('T')[0]
+    const dateKey = selectedDate.toLocaleDateString('en-CA') // YYYY-MM-DD format in local timezone
     const savedData = localStorage.getItem(`day-${dateKey}`)
     if (savedData) {
       const { title, description } = JSON.parse(savedData)
@@ -23,7 +23,7 @@ const LeftPanel = ({ selectedDate, onDateSelect, onRecordVideo, onUploadVideo, v
   
   // Save title and description when they change
   const saveDayData = (title, description) => {
-    const dateKey = selectedDate.toISOString().split('T')[0]
+    const dateKey = selectedDate.toLocaleDateString('en-CA') // YYYY-MM-DD format in local timezone
     localStorage.setItem(`day-${dateKey}`, JSON.stringify({ title, description }))
   }
   
@@ -58,7 +58,7 @@ const LeftPanel = ({ selectedDate, onDateSelect, onRecordVideo, onUploadVideo, v
       
             {/* Daily Entry Card */}
       <div className="px-6 mb-6">
-        <div className="bg-white p-6 border border-gray-200">
+        <div className="bg-white p-6 border border-white">
           <div className="mb-4">
             <input
               type="text"
@@ -77,26 +77,7 @@ const LeftPanel = ({ selectedDate, onDateSelect, onRecordVideo, onUploadVideo, v
               onChange={handleDescriptionChange}
             />
           </div>
-          {todayVideos.length > 0 && (
-            <div className="pt-3 border-t border-gray-100">
-              <p className="text-xs text-gray-500 mb-2">Today's videos:</p>
-              <div className="space-y-2">
-                {todayVideos.slice(0, 3).map((video) => (
-                  <div key={video.id} className="flex items-center space-x-2">
-                    <Video className="w-4 h-4 text-blue-500" />
-                    <span className="text-xs text-gray-600 truncate">
-                      {video.type === 'recorded' ? 'Recorded' : video.filename}
-                    </span>
-                  </div>
-                ))}
-                {todayVideos.length > 3 && (
-                  <p className="text-xs text-gray-500">
-                    +{todayVideos.length - 3} more
-                  </p>
-                )}
-              </div>
-            </div>
-          )}
+
         </div>
       </div>
       
@@ -107,7 +88,7 @@ const LeftPanel = ({ selectedDate, onDateSelect, onRecordVideo, onUploadVideo, v
       <div className="px-6 mb-4">
         <button
           onClick={onRecordVideo}
-          className="w-full bg-red-500 hover:bg-red-600 text-white font-medium py-3 px-4 rounded-[30px] transition-colors"
+          className="w-full bg-[#7E7E7E] hover:bg-[#6B6B6B] text-white font-medium py-3 px-4 rounded-[30px] transition-colors"
         >
           Record Video
         </button>
@@ -115,7 +96,7 @@ const LeftPanel = ({ selectedDate, onDateSelect, onRecordVideo, onUploadVideo, v
       
       {/* Upload Button */}
       <div className="px-6 pb-6">
-        <label className="w-full bg-blue-500 hover:bg-blue-600 text-white font-medium py-3 px-4 rounded-[30px] transition-colors cursor-pointer flex items-center justify-center">
+        <label className="w-full bg-black hover:bg-gray-800 text-white font-medium py-3 px-4 rounded-[30px] transition-colors cursor-pointer flex items-center justify-center">
           Upload Video
           <input
             type="file"

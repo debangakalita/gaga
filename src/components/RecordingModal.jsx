@@ -63,14 +63,17 @@ const RecordingModal = ({ isOpen, onClose, onSave, selectedDate }) => {
     
     recorder.onstop = () => {
       const blob = new Blob(chunks, { type: 'video/webm' })
-      const url = URL.createObjectURL(blob)
+      const dateKey = selectedDate.toLocaleDateString('en-CA')
+      console.log('Recording video for date:', dateKey, 'Selected date:', selectedDate)
       const video = {
         id: Date.now().toString(),
-        url,
-        date: selectedDate.toISOString().split('T')[0],
+        blob, // Store the blob for IndexedDB
+        date: dateKey,
         timestamp: new Date().toISOString(),
         type: 'recorded'
       }
+      
+      // Save video and close modal
       onSave(video)
       onClose()
     }

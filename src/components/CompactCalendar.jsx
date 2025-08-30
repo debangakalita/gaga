@@ -42,7 +42,8 @@ const CompactCalendar = ({ selectedDate, onDateSelect }) => {
   }
   
   const handleDateClick = (day) => {
-    const newDate = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), day)
+    // Create date at midnight in local timezone to avoid timezone issues
+    const newDate = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), day, 0, 0, 0, 0)
     onDateSelect(newDate)
   }
   
@@ -103,8 +104,8 @@ const CompactCalendar = ({ selectedDate, onDateSelect }) => {
       
       {/* Day names */}
       <div className="grid grid-cols-7 gap-1 mb-1">
-        {dayNames.map((day) => (
-          <div key={day} className="w-6 h-6 flex items-center justify-center text-[10px] font-medium text-gray-500">
+        {dayNames.map((day, index) => (
+          <div key={`day-${index}`} className="w-6 h-6 flex items-center justify-center text-[10px] font-medium text-gray-500">
             {day}
           </div>
         ))}

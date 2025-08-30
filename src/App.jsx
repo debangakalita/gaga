@@ -4,12 +4,22 @@ import RightPanel from './components/RightPanel'
 import MakeMovieModal from './components/MakeMovieModal'
 import RecordingModal from './components/RecordingModal'
 import { useVideoStore } from './stores/videoStore'
+import { videoStorage } from './services/videoStorage'
 
 function App() {
-  const [selectedDate, setSelectedDate] = useState(new Date())
+  // Initialize with today's date at midnight in local timezone
+  const [selectedDate, setSelectedDate] = useState(() => {
+    const now = new Date()
+    return new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0, 0)
+  })
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [isRecordingModalOpen, setIsRecordingModalOpen] = useState(false)
-  const { videos, addVideo, deleteVideo } = useVideoStore()
+  const { videos, addVideo, deleteVideo, initializeVideos, isLoading } = useVideoStore()
+  
+  // Initialize videos from IndexedDB when app loads
+  useEffect(() => {
+    initializeVideos()
+  }, [initializeVideos])
 
   const handleDateSelect = (date) => {
     setSelectedDate(date)
@@ -18,20 +28,43 @@ function App() {
   const handleRecordVideo = () => {
     setIsRecordingModalOpen(true)
   }
+  
+  const handleVideoSaved = async (video) => {
+    try {
+      await addVideo(video)
+      console.log('Video saved and store updated')
+    } catch (error) {
+      console.error('Error saving video:', error)
+    }
+  }
 
-  const handleUploadVideo = (event) => {
+  const handleUploadVideo = async (event) => {
     const file = event.target.files[0]
     if (file) {
-      const url = URL.createObjectURL(file)
+      const dateKey = selectedDate.toLocaleDateString('en-CA')
+      console.log('Uploading video for date:', dateKey, 'Selected date:', selectedDate)
+      
+      // Convert file to blob for storage
+      const blob = await videoStorage.fileToBlob(file)
+      
       const video = {
         id: Date.now().toString(),
-        url,
-        date: selectedDate.toISOString().split('T')[0],
+        blob, // Store the blob for IndexedDB
+        date: dateKey,
         timestamp: new Date().toISOString(),
         type: 'uploaded',
         filename: file.name
       }
-      addVideo(video)
+      
+      console.log('About to add video:', video)
+      await addVideo(video)
+      console.log('Video added, refreshing...')
+      
+      // Manually refresh videos to ensure UI updates
+      setTimeout(() => {
+        console.log('Refreshing videos...')
+        initializeVideos()
+      }, 500)
     }
   }
 
@@ -47,6 +80,9 @@ function App() {
     }
   }
 
+  const dateKey = selectedDate.toLocaleDateString('en-CA')
+  console.log('App render - Date key:', dateKey, 'Selected date:', selectedDate, 'Available video dates:', Object.keys(videos), 'Videos for current date:', videos[dateKey])
+  
   return (
     <div className="flex h-screen font-inter">
       <LeftPanel
@@ -54,24 +90,25 @@ function App() {
         onDateSelect={handleDateSelect}
         onRecordVideo={handleRecordVideo}
         onUploadVideo={handleUploadVideo}
-        videos={videos[selectedDate.toISOString().split('T')[0]] || []}
+        videos={videos[dateKey] || []}
       />
       <RightPanel
         selectedDate={selectedDate}
-        videos={videos[selectedDate.toISOString().split('T')[0]] || []}
+        videos={videos[dateKey] || []}
         onDeleteVideo={handleDeleteVideo}
         onOpenModal={() => setIsModalOpen(true)}
+        isLoading={isLoading}
       />
       <MakeMovieModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
-        videos={videos[selectedDate.toISOString().split('T')[0]] || []}
+        videos={videos[dateKey] || []}
         selectedDate={selectedDate}
       />
       <RecordingModal
         isOpen={isRecordingModalOpen}
         onClose={() => setIsRecordingModalOpen(false)}
-        onSave={addVideo}
+        onSave={handleVideoSaved}
         selectedDate={selectedDate}
       />
     </div>
