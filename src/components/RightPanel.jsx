@@ -1,9 +1,15 @@
 import React from 'react'
 import { Play, Trash2 } from 'lucide-react'
 import VideoThumbnail from './VideoThumbnail'
+import { useVideoStore } from '../stores/videoStore'
 
 const RightPanel = ({ selectedDate, videos, onDeleteVideo, onOpenModal, isLoading }) => {
   const todayVideos = videos || []
+  const { hasWatchedMovie } = useVideoStore()
+  
+  // Check if a movie has been watched for the selected date
+  const dateKey = selectedDate.toLocaleDateString('en-CA')
+  const hasWatched = hasWatchedMovie(dateKey)
   
   return (
     <div className="flex-1 bg-white flex flex-col h-full">
@@ -13,9 +19,19 @@ const RightPanel = ({ selectedDate, videos, onDeleteVideo, onOpenModal, isLoadin
           {todayVideos.length > 0 && (
             <button
               onClick={onOpenModal}
-              className="bg-blue-500 hover:bg-blue-600 text-white font-medium py-2 px-4 rounded-lg transition-colors"
+              className="bg-blue-500 hover:bg-blue-600 text-white font-medium py-2 px-4 rounded-lg transition-colors flex items-center space-x-2"
             >
-              Make Movie
+              {hasWatched ? (
+                <>
+                  <Play className="w-4 h-4" />
+                  <span>Watch Movie</span>
+                </>
+              ) : (
+                <>
+                  <Play className="w-4 h-4" />
+                  <span>Make Movie</span>
+                </>
+              )}
             </button>
           )}
         </div>

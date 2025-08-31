@@ -4,6 +4,7 @@ import { videoStorage } from '../services/videoStorage'
 export const useVideoStore = create((set, get) => ({
   videos: {},
   isLoading: false,
+  watchedMovies: JSON.parse(localStorage.getItem('watchedMovies') || '{}'),
   
   // Initialize videos from IndexedDB
   initializeVideos: async () => {
@@ -124,5 +125,24 @@ export const useVideoStore = create((set, get) => ({
     } catch (error) {
       console.error('Error clearing videos:', error)
     }
+  },
+  
+  // Mark a date as having a watched movie
+  markMovieWatched: (date) => {
+    set((state) => {
+      const newWatchedMovies = {
+        ...state.watchedMovies,
+        [date]: true
+      }
+      // Save to localStorage
+      localStorage.setItem('watchedMovies', JSON.stringify(newWatchedMovies))
+      return { watchedMovies: newWatchedMovies }
+    })
+  },
+  
+  // Check if a movie has been watched for a specific date
+  hasWatchedMovie: (date) => {
+    const state = get()
+    return state.watchedMovies && state.watchedMovies[date] === true
   }
 }))

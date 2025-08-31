@@ -1,11 +1,13 @@
 import React, { useState } from 'react'
 import { X, Play, Pause, Scissors, Download, Move } from 'lucide-react'
+import { useVideoStore } from '../stores/videoStore'
 
 const MakeMovieModal = ({ isOpen, onClose, videos, selectedDate }) => {
   const [selectedVideos, setSelectedVideos] = useState([])
   const [videoOrder, setVideoOrder] = useState([])
   const [isPlaying, setIsPlaying] = useState(false)
   const [currentTime, setCurrentTime] = useState(0)
+  const { markMovieWatched } = useVideoStore()
   
   React.useEffect(() => {
     if (isOpen && videos.length > 0) {
@@ -128,6 +130,10 @@ const MakeMovieModal = ({ isOpen, onClose, videos, selectedDate }) => {
     
     // Start playing
     playNextVideo()
+    
+    // Mark this movie as watched for the selected date
+    const dateKey = selectedDate.toLocaleDateString('en-CA')
+    markMovieWatched(dateKey)
     
     // Add elements to the player
     moviePlayer.appendChild(videoElement)
