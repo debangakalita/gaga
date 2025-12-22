@@ -46,7 +46,8 @@ const VideoThumbnail = ({ video, onDelete }) => {
         <video
           src={video.url}
           className="w-full h-full object-cover"
-          preload="metadata"
+          preload="none"
+          loading="lazy"
         />
         
         {/* Play Button Overlay */}

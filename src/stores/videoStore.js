@@ -4,62 +4,70 @@ import { videoStorage } from '../services/videoStorage'
 export const useVideoStore = create((set, get) => ({
   videos: {},
   isLoading: false,
+  loadedDates: new Set(), // Track which dates have been loaded
   watchedMovies: JSON.parse(localStorage.getItem('watchedMovies') || '{}'),
   
-  // Initialize videos from IndexedDB
-  initializeVideos: async () => {
+  // Load videos for a specific date (lazy loading)
+  loadVideosForDate: async (date) => {
+    const dateKey = typeof date === 'string' ? date : date.toLocaleDateString('en-CA')
+    
+    // Skip if already loaded
+    if (get().loadedDates.has(dateKey)) {
+      return
+    }
+    
     try {
       set({ isLoading: true })
-      const allVideos = await videoStorage.getAllVideos()
-      console.log('All videos from IndexedDB:', allVideos)
+      const videos = await videoStorage.getVideosByDate(dateKey)
       
-      // Group videos by date
-      const videosByDate = {}
-      allVideos.forEach(video => {
-        if (!videosByDate[video.date]) {
-          videosByDate[video.date] = []
+      set((state) => {
+        const newLoadedDates = new Set(state.loadedDates)
+        newLoadedDates.add(dateKey)
+        
+        return {
+          videos: {
+            ...state.videos,
+            [dateKey]: videos
+          },
+          loadedDates: newLoadedDates,
+          isLoading: false
         }
-        videosByDate[video.date].push(video)
       })
-      
-      console.log('Videos grouped by date:', videosByDate)
-      set({ videos: videosByDate, isLoading: false })
     } catch (error) {
-      console.error('Error initializing videos:', error)
+      console.error('Error loading videos for date:', error)
       set({ isLoading: false })
     }
   },
   
   addVideo: async (video) => {
     try {
-      console.log('Adding video to store:', video)
-      
       // Save to IndexedDB
       const savedVideo = await videoStorage.saveVideo(video)
-      console.log('Video saved to IndexedDB:', savedVideo)
       
       // Create video object with proper URL for immediate display
       const videoForDisplay = {
         ...savedVideo,
         url: video.blob ? URL.createObjectURL(video.blob) : savedVideo.url
       }
-      console.log('Video for display:', videoForDisplay)
       
       // Update local state immediately
       set((state) => {
         const date = videoForDisplay.date
         const existingVideos = state.videos[date] || []
-        const newState = {
+        
+        // Mark this date as loaded
+        const newLoadedDates = new Set(state.loadedDates)
+        newLoadedDates.add(date)
+        
+        return {
           videos: {
             ...state.videos,
             [date]: [...existingVideos, videoForDisplay]
-          }
+          },
+          loadedDates: newLoadedDates
         }
-        console.log('New store state:', newState)
-        return newState
       })
       
-      // Return the saved video for confirmation
       return videoForDisplay
     } catch (error) {
       console.error('Error adding video:', error)
@@ -69,6 +77,21 @@ export const useVideoStore = create((set, get) => ({
   
   deleteVideo: async (videoId) => {
     try {
+      // Get video before deleting to revoke URL
+      const state = get()
+      let videoToDelete = null
+      Object.keys(state.videos).forEach(date => {
+        const video = state.videos[date].find(v => v.id === videoId)
+        if (video) {
+          videoToDelete = video
+        }
+      })
+      
+      // Revoke object URL to free memory
+      if (videoToDelete && videoToDelete.url) {
+        URL.revokeObjectURL(videoToDelete.url)
+      }
+      
       // Delete from IndexedDB
       await videoStorage.deleteVideo(videoId)
       

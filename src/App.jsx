@@ -14,12 +14,13 @@ function App() {
   })
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [isRecordingModalOpen, setIsRecordingModalOpen] = useState(false)
-  const { videos, addVideo, deleteVideo, initializeVideos, isLoading } = useVideoStore()
+  const { videos, addVideo, deleteVideo, loadVideosForDate, isLoading } = useVideoStore()
   
-  // Initialize videos from IndexedDB when app loads
+  // Load videos for selected date when it changes
   useEffect(() => {
-    initializeVideos()
-  }, [initializeVideos])
+    const dateKey = selectedDate.toLocaleDateString('en-CA')
+    loadVideosForDate(dateKey)
+  }, [selectedDate, loadVideosForDate])
 
   const handleDateSelect = (date) => {
     setSelectedDate(date)
@@ -32,7 +33,6 @@ function App() {
   const handleVideoSaved = async (video) => {
     try {
       await addVideo(video)
-      console.log('Video saved and store updated')
     } catch (error) {
       console.error('Error saving video:', error)
     }
@@ -42,7 +42,6 @@ function App() {
     const file = event.target.files[0]
     if (file) {
       const dateKey = selectedDate.toLocaleDateString('en-CA')
-      console.log('Uploading video for date:', dateKey, 'Selected date:', selectedDate)
       
       // Convert file to blob for storage
       const blob = await videoStorage.fileToBlob(file)
@@ -60,15 +59,7 @@ function App() {
         filename: `Clip ${clipNumber}`
       }
       
-      console.log('About to add video:', video)
       await addVideo(video)
-      console.log('Video added, refreshing...')
-      
-      // Manually refresh videos to ensure UI updates
-      setTimeout(() => {
-        console.log('Refreshing videos...')
-        initializeVideos()
-      }, 500)
     }
   }
 
@@ -85,7 +76,6 @@ function App() {
   }
 
   const dateKey = selectedDate.toLocaleDateString('en-CA')
-  console.log('App render - Date key:', dateKey, 'Selected date:', selectedDate, 'Available video dates:', Object.keys(videos), 'Videos for current date:', videos[dateKey])
   
   return (
     <div className="flex h-screen font-inter">

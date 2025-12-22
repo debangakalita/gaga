@@ -30,8 +30,6 @@ class VideoStorageService {
   async saveVideo(video) {
     if (!this.db) await this.initDB()
     
-    console.log('Saving video to IndexedDB:', video)
-    
     // Convert video blob to ArrayBuffer first, then save
     if (video.blob) {
       try {
@@ -42,8 +40,6 @@ class VideoStorageService {
           url: null // Remove the temporary URL
         }
         
-        console.log('Video data to store:', videoData)
-        
         // Now save to IndexedDB
         return await this.saveToIndexedDB(videoData)
       } catch (error) {
@@ -52,7 +48,6 @@ class VideoStorageService {
       }
     } else {
       // For videos without blob (e.g., from file input)
-      console.log('Saving video without blob:', video)
       return await this.saveToIndexedDB(video)
     }
   }
@@ -75,7 +70,6 @@ class VideoStorageService {
       
       const request = store.put(videoData)
       request.onsuccess = () => {
-        console.log('Video successfully saved to IndexedDB')
         resolve(videoData)
       }
       request.onerror = () => {
@@ -95,18 +89,14 @@ class VideoStorageService {
       const request = index.getAll(date)
       
       request.onsuccess = () => {
-        console.log('Retrieved videos from IndexedDB:', request.result)
         const videos = request.result.map(video => {
           let url
           if (video.blobData) {
             url = URL.createObjectURL(new Blob([video.blobData], { type: 'video/webm' }))
-            console.log('Created URL from blob:', url)
           } else if (video.blob) {
             url = URL.createObjectURL(video.blob)
-            console.log('Created URL from blob object:', url)
           } else {
             url = video.url
-            console.log('Using existing URL:', url)
           }
           
           return {
@@ -114,7 +104,6 @@ class VideoStorageService {
             url
           }
         })
-        console.log('Processed videos with URLs:', videos)
         resolve(videos)
       }
       
@@ -131,7 +120,6 @@ class VideoStorageService {
       const request = store.getAll()
       
       request.onsuccess = () => {
-        console.log('Retrieved all videos from IndexedDB:', request.result)
         const videos = request.result.map(video => {
           let url
           if (video.blobData) {
@@ -147,7 +135,6 @@ class VideoStorageService {
             url
           }
         })
-        console.log('Processed all videos with URLs:', videos)
         resolve(videos)
       }
       
