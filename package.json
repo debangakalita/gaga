@@ -2,6 +2,7 @@
   "name": "gaga-video-diary",
   "version": "1.0.0",
   "description": "Daily Video Diary App",
+  "homepage": "https://debangakalita.github.io/gaga/",
   "main": "index.js",
   "scripts": {
     "dev": "vite",
