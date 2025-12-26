@@ -14,7 +14,7 @@ function App() {
   })
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [isRecordingModalOpen, setIsRecordingModalOpen] = useState(false)
-  const { videos, addVideo, deleteVideo, loadVideosForDate, isLoading } = useVideoStore()
+  const { videos, addVideo, deleteVideo, updateVideo, loadVideosForDate, isLoading } = useVideoStore()
   
   // Load videos for selected date when it changes
   useEffect(() => {
@@ -67,6 +67,14 @@ function App() {
     deleteVideo(videoId)
   }
 
+  const handleUpdateVideo = async (videoId, updates) => {
+    try {
+      await updateVideo(videoId, updates)
+    } catch (error) {
+      console.error('Error updating video:', error)
+    }
+  }
+
   const handleRandomMoment = () => {
     const allVideos = Object.values(videos).flat()
     if (allVideos.length > 0) {
@@ -90,6 +98,7 @@ function App() {
         selectedDate={selectedDate}
         videos={videos[dateKey] || []}
         onDeleteVideo={handleDeleteVideo}
+        onUpdateVideo={handleUpdateVideo}
         onOpenModal={() => setIsModalOpen(true)}
         isLoading={isLoading}
       />
